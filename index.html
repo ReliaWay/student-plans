@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>ReliaWay</title>
+    <link rel="icon" href="images/icon.ico" type="image/x-icon">
 
     <!-- Cairo Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +60,7 @@
 
                 <div class="spinner"></div>
 
-                <span>جارٍ تحميل البيانات...</span>
+                <span> جارٍ تحميل البيانات... يمكن ان يسغرق حتى دقيقتان</span>
 
             </div>
 
@@ -165,6 +166,13 @@
                     تحميل العقد
 
                 </button>
+            </div>
+
+            <div id="downloadLoading" class="loading" style="display:none; margin-top:15px;">
+
+                <div class="spinner"></div>
+
+                <span>جارٍ تجهيز العقد... قد يستغرق ذلك بضع ثوانٍ.</span>
 
             </div>
 
@@ -210,7 +218,25 @@
 
     </div>
 
+    <div id="customAlert" class="custom-alert-overlay">
+        <div class="custom-alert">
+
+            <div id="customAlertIcon" class="custom-alert-icon"></div>
+
+            <h3 id="customAlertTitle"></h3>
+
+            <p id="customAlertMessage"></p>
+
+            <button id="customAlertButton" onclick="closeAlert()">
+                OK
+            </button>
+
+        </div>
+    </div>
+
+       
     <script src="script.js"></script>
+
 
 </body>
 

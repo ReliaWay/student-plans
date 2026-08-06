@@ -9,8 +9,9 @@ const whatsappNumbers = [
 
 const FACEBOOK_LINK = "https://www.facebook.com/profile.php?id=61590549099190";
 const CONTRACT_API =
-    "https://script.google.com/macros/s/AKfycbwxIRNY5JIyjiBA4jUtlRX38JQzIzdOSOvcj-_T-iFRpssesGKLn_cCTQzMw3VNAJfg/exec";
+    "https://script.google.com/macros/s/AKfycbziYvuDg0NE2Z8ttQY2GsO1YvDxE9gMB4AqlR9BEF-WGi1LaRaS-77I-RqUYc0gHncutQ/exec";
 
+const idPattern = /^2627\d{2,3}$/;
 
 /* ===========================
         Globals & Init
@@ -35,37 +36,37 @@ function generatePricePlans(price) {
 
             [
                 "سنوي",
-                `${price.toLocaleString("ar-EG")} جنيه`,
+                `${price} جنيه`,
                 "دفعة واحدة"
             ],
 
             [
                 "نصف سنوي",
-                `${Math.round(price / 2).toLocaleString("ar-EG")} جنيه`,
+                `${Math.round(price / 2)} جنيه`,
                 "دفعتان متساويتان"
             ],
 
             [
                 "6 أشهر",
-                `${Math.round(price / 6).toLocaleString("ar-EG")} جنيه شهريًا`,
+                `${Math.round(price / 6)} جنيه شهريًا`,
                 "بدون مقدم"
             ],
 
             [
                 "8 أشهر (20٪ مقدم)",
-                `${Math.round(price * 0.20).toLocaleString("ar-EG")} جنيه مقدم + ${Math.round(price * 0.80 / 8).toLocaleString("ar-EG")} جنيه شهريًا`,
+                `${Math.round(price * 0.20)} جنيه مقدم <br> ${Math.round(price * 0.80 / 8)} جنيه شهريًا`,
                 "8 أقساط شهرية"
             ],
 
             [
                 "8 أشهر (30٪ مقدم)",
-                `${Math.round(price * 0.30).toLocaleString("ar-EG")} جنيه مقدم + ${Math.round(price * 0.70 / 8).toLocaleString("ar-EG")} جنيه شهريًا`,
+                `${Math.round(price * 0.30)} جنيه مقدم <br> ${Math.round(price * 0.70 / 8)} جنيه شهريًا`,
                 "8 أقساط شهرية"
             ],
 
             [
                 "8 أشهر (40٪ مقدم)",
-                `${Math.round(price * 0.40).toLocaleString("ar-EG")} جنيه مقدم + ${Math.round(price * 0.60 / 8).toLocaleString("ar-EG")} جنيه شهريًا`,
+                `${Math.round(price * 0.40)} جنيه مقدم <br> ${Math.round(price * 0.60 / 8)} جنيه شهريًا`,
                 "8 أقساط شهرية"
             ]
 
@@ -95,11 +96,20 @@ async function loadPlans() {
         .trim();
 
     if (id === "") {
-
-        alert("يرجى إدخال كود الطالب");
+        showWarning("يرجى إدخال كود الطالب");
         return;
 
     }
+
+    if (!idPattern.test(id)) {
+        showWarning(
+            "يرجى إدخال كود طالب صحيح.\n\n" +
+            "يجب أن يبدأ بـ 2627 ويتكون من 6 أو 7 أرقام فقط.\n\n" +
+            "أمثلة:\n262708\n2627123"
+        );
+        return;
+    }
+
 
     const button = document.getElementById("btnList");
     const loading = document.getElementById("loading");
@@ -129,24 +139,32 @@ async function loadPlans() {
         }
 
         const student = await response.json();
+        student.id = id;
+        
         currentStudent = student;
+
+
+        if(student.price == -5) {
+            showWarning("لم يتم العثور على الطالب تأكد من أن الكود صحيح");
+            return;
+        }
 
         switch (student.price) {
 
             case -1:
-                alert("لم يتم تحديد الرسوم لهذا الطالب.");
+                showWarning("لم يتم تحديد رسوم لهذا الطالب, إذا كنت تعتقد ان هناك خطأ توصل مع الدعم.");
                 return;
 
             case -2:
-                alert("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
+                showError("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
                 return;
 
             case -3:
-                alert("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
+                showError("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
                 return;
 
             case -4:
-                alert("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
+                showError("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
                 return;
 
         }
@@ -202,7 +220,7 @@ async function loadPlans() {
 
         console.error(error);
 
-        alert(
+        showError(
             "حدث خطأ أثناء الاتصال بالخادم."
         );
 
@@ -233,11 +251,14 @@ async function downloadContract() {
 
     if (!currentStudent) {
 
-        alert("يرجى البحث عن الطالب أولاً.");
+        showWarning("يرجى البحث عن الطالب أولاً.");
         return;
 
     }
 
+    console.log(currentStudent);
+
+        
     let plan = document.getElementById("planSelect").value;
 
     let percent = 0;
@@ -265,6 +286,7 @@ async function downloadContract() {
 
     button.disabled = true;
     button.textContent = "جارٍ إنشاء العقد...";
+    document.getElementById("downloadLoading").style.display = "flex";
 
     try {
 
@@ -273,6 +295,7 @@ async function downloadContract() {
             "?price=" + encodeURIComponent(currentStudent.price) +
             "&percent=" + encodeURIComponent(percent) +
             "&plan=" + encodeURIComponent(plan) +
+            "&studentId=" + encodeURIComponent(currentStudent.id) +
             "&t=" + Date.now(),
             {
                 method: "GET",
@@ -290,20 +313,22 @@ async function downloadContract() {
             throw new Error(data.error);
         }
 
-        window.open(data.url, "_blank");
+        const a = document.createElement("a");
+        a.href = data.url;
+        a.click();
 
     }
     catch (err) {
 
         console.error(err);
-        alert("حدث خطأ أثناء إنشاء العقد.");
+        showError("حدث خطأ أثناء إنشاء العقد.");
 
     }
     finally {
 
         button.disabled = false;
         button.textContent = "تحميل العقد";
-
+        document.getElementById("downloadLoading").style.display = "none";
     }
 
 }
@@ -329,19 +354,14 @@ document
     .getElementById("btnWhatsapp")
     .addEventListener("click", () => {
 
-        const id = document
-            .getElementById("studentId")
-            .value
-            .trim();
-
-        const index = getRepresentativeIndex(id);
+        const index = getRepresentativeIndex(currentStudent.id);
 
         let message = "";
 
         message += `مرحبًا، لدي استفسار بخصوص خطط السداد.`;
 
         if (currentStudent) {
-            message += `\n\nكود الطالب: ${id}`;
+            message += `\n\nكود الطالب: ${currentStudent.id}`;
             message += `\nاسم الطالب: ${currentStudent.studentName}`;
             message +=  '\n';
         }
@@ -363,3 +383,54 @@ document
         );
 
     });
+
+
+function showAlert(type, message) {
+
+    const title = document.getElementById("customAlertTitle");
+    const icon = document.getElementById("customAlertIcon");
+    const button = document.getElementById("customAlertButton");
+
+    switch (type) {
+
+        case "success":
+            title.textContent = "Success";
+            icon.textContent = "✅";
+            icon.style.color = "#28a745";
+            button.style.background = "#28a745";
+            break;
+
+        case "warning":
+            title.textContent = "Warning";
+            icon.textContent = "⚠️";
+            icon.style.color = "#f0ad4e";
+            button.style.background = "#f0ad4e";
+            break;
+
+        case "error":
+            title.textContent = "Error";
+            icon.textContent = "❌";
+            icon.style.color = "#dc3545";
+            button.style.background = "#dc3545";
+            break;
+    }
+
+    document.getElementById("customAlertMessage").textContent = message;
+    document.getElementById("customAlert").style.display = "flex";
+}
+
+function closeAlert() {
+    document.getElementById("customAlert").style.display = "none";
+}
+
+function showConfirmation(message) {
+    showAlert("success", message);
+}
+
+function showWarning(message) {
+    showAlert("warning", message);
+}
+
+function showError(message) {
+    showAlert("error", message);
+}

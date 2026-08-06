@@ -472,6 +472,65 @@ footer p{
 
 }
 
+.custom-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+}
+
+.custom-alert {
+    background: white;
+    width: 350px;
+    max-width: 90%;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+
+    animation: popup .2s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+.custom-alert-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.custom-alert h3 {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.custom-alert p {
+    white-space: pre-line;
+    margin-bottom: 20px;
+}
+
+.custom-alert button {
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+@keyframes popup {
+    from {
+        opacity: 0;
+        transform: scale(.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* Mobile */
 
 
