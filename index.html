@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ReliaWay</title>
+
+    <!-- Cairo Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Logo -->
+
+        <div class="header">
+
+            <img
+                src="images/logo.png"
+                alt="ReliaWay Logo"
+                class="logo">
+
+            <h1>ReliaWay</h1>
+
+            <div class="gold-line"></div>
+
+        </div>
+
+        <!-- Search Card -->
+
+        <div class="card">
+
+            <h2>الاستعلام عن خطط السداد</h2>
+
+            <div class="search-row">
+
+                <input
+                    id="studentId"
+                    type="text"
+                    placeholder= "أدخل كود الطالب المكون من 6 او 7 احرف و يبدأ ب 2627">
+
+                <button id="btnList">
+                    عرض خطط السداد
+                </button>
+
+            </div>
+
+            <div id="loading" class="loading" style="display:none;">
+
+                <div class="spinner"></div>
+
+                <span>جارٍ تحميل البيانات...</span>
+
+            </div>
+
+        </div>
+
+        <!-- Student Card -->
+
+        <div
+            id="result"
+            class="card"
+            style="display:none;">
+
+            <h2>بيانات الطالب</h2>
+
+            <div class="student-grid">
+
+                <div class="info-box">
+
+                    <div class="label">
+                        اسم الطالب
+                    </div>
+
+                    <div
+                        class="value"
+                        id="studentName">
+                        -
+                    </div>
+
+                </div>
+
+                <div class="info-box">
+
+                    <div class="label">
+                        المدرسة
+                    </div>
+
+                    <div
+                        class="value"
+                        id="studentSchool">
+                        -
+                    </div>
+
+                </div>
+
+                <div class="info-box">
+
+                    <div class="label">
+                        محل الإقامة
+                    </div>
+
+                    <div
+                        class="value"
+                        id="studentLocation">
+                        -
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <h2>خطط السداد</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>الخطة</th>
+                            <th>التفاصيل</th>
+                            <th>ملاحظات</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="plansTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="bottom">
+
+                <label>
+
+                    اختر خطة السداد
+
+                </label>
+
+                <select id="planSelect">
+
+                </select>
+
+                <button id="btnDownload">
+
+                    تحميل العقد
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+
+        <footer>
+
+            <p>
+                في حالة وجود أي مشكلة يرجى التواصل معنا
+            </p>
+
+            <div class="contact-buttons">
+
+                <button
+                    id="btnWhatsapp"
+                    class="contact-btn whatsapp">
+
+                    <img
+                        src="images/whatsapp.png"
+                        alt="WhatsApp">
+
+                    واتساب
+
+                </button>
+
+                <button
+                    id="btnFacebook"
+                    class="contact-btn facebook">
+
+                    <img
+                        src="images/facebook.png"
+                        alt="Facebook">
+
+                    فيسبوك
+
+                </button>
+
+            </div>
+
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
