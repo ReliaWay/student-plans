@@ -53,21 +53,21 @@ function generatePricePlans(price) {
             ],
 
             [
-                "8 أشهر (20٪ مقدم)",
-                `${Math.round(price * 0.20)} جنيه مقدم <br> ${Math.round(price * 0.80 / 8)} جنيه شهريًا`,
-                "8 أقساط شهرية"
+                "7 أشهر (20٪ مقدم)",
+                `${Math.round(price * 0.20)} جنيه مقدم <br> ${Math.round(price * 0.80 / 7)} جنيه شهريًا`,
+                "7 أقساط شهرية"
             ],
 
             [
-                "8 أشهر (30٪ مقدم)",
-                `${Math.round(price * 0.30)} جنيه مقدم <br> ${Math.round(price * 0.70 / 8)} جنيه شهريًا`,
-                "8 أقساط شهرية"
+                "7 أشهر (30٪ مقدم)",
+                `${Math.round(price * 0.30)} جنيه مقدم <br> ${Math.round(price * 0.70 / 7)} جنيه شهريًا`,
+                "7 أقساط شهرية"
             ],
 
             [
-                "8 أشهر (40٪ مقدم)",
-                `${Math.round(price * 0.40)} جنيه مقدم <br> ${Math.round(price * 0.60 / 8)} جنيه شهريًا`,
-                "8 أقساط شهرية"
+                "7 أشهر (40٪ مقدم)",
+                `${Math.round(price * 0.40)} جنيه مقدم <br> ${Math.round(price * 0.60 / 7)} جنيه شهريًا`,
+                "7 أقساط شهرية"
             ]
 
         ],
@@ -76,9 +76,9 @@ function generatePricePlans(price) {
             "yearly",
             "half",
             "6months",
-            "8months20",
-            "8months30",
-            "8months40"
+            "7months20",
+            "7months30",
+            "7months40"
         ]
 
     };
@@ -93,7 +93,8 @@ async function loadPlans() {
     const id = document
         .getElementById("studentId")
         .value
-        .trim();
+        .trim()
+        .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
 
     if (id === "") {
         showWarning("يرجى إدخال كود الطالب");
@@ -265,18 +266,18 @@ async function downloadContract() {
 
     switch (plan) {
 
-        case "8months20":
-            plan = "8months";
+        case "7months20":
+            plan = "7months";
             percent = 20;
             break;
 
-        case "8months30":
-            plan = "8months";
+        case "7months30":
+            plan = "7months";
             percent = 30;
             break;
 
-        case "8months40":
-            plan = "8months";
+        case "7months40":
+            plan = "7months";
             percent = 40;
             break;
 
