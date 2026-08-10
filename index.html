@@ -1,243 +1,63 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>ReliaWay</title>
     <link rel="icon" href="images/icon.ico" type="image/x-icon">
-
-    <!-- Cairo Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
-
-    <div class="container">
-
-        <!-- Logo -->
-
-        <div class="header">
-
-            <img
-                src="images/logo.png"
-                alt="ReliaWay Logo"
-                class="logo">
-
+    <div class="page-shell">
+        <header class="main-header">
+            <div class="header-bar">
+                <img src="images/logo.png" alt="ReliaWay Logo" class="logo">
+            </div>
             <h1>ReliaWay</h1>
-
+            <p class="subtitle">اختر الخدمة التي ترغب في البدء بها</p>
             <div class="gold-line"></div>
+        </header>
 
-        </div>
-
-        <!-- Search Card -->
-
-        <div class="card">
-
-            <h2>الاستعلام عن خطط السداد</h2>
-
-            <div class="search-row">
-
-                <input
-                    id="studentId"
-                    type="text"
-                    placeholder= "أدخل كود الطالب المكون من 6 او 7 احرف و يبدأ ب 2627">
-
-                <button id="btnList">
-                    عرض خطط السداد
-                </button>
-
+        <main class="steps-container">
+            <div class="step-item">
+                <a class="option-card step-card" href="booking.html">
+                    <span class="step-number">1</span>
+                    <h2>حجز لطالب</h2>
+                    <p>هذه الصفحة ستكون جاهزة قريبًا مع خطوات الحجز وإدارة الطالب.</p>
+                </a>
             </div>
 
-            <div id="loading" class="loading" style="display:none;">
+            <div class="step-divider" aria-hidden="true"></div>
 
-                <div class="spinner"></div>
-
-                <span> جارٍ تحميل البيانات... يمكن ان يسغرق حتى دقيقتان</span>
-
+            <div class="step-item">
+                <a class="option-card step-card" href="pricing.html">
+                    <span class="step-number">2</span>
+                    <h2>الاستعلام عن خطط الاسعار و العقود</h2>
+                    <p>استخدم هذه الصفحة للاستعلام عن خطط السداد وإنشاء العقد.</p>
+                </a>
             </div>
 
-        </div>
+            <div class="step-divider" aria-hidden="true"></div>
 
-        <!-- Student Card -->
-
-        <div
-            id="result"
-            class="card"
-            style="display:none;">
-
-            <h2>بيانات الطالب</h2>
-
-            <div class="student-grid">
-
-                <div class="info-box">
-
-                    <div class="label">
-                        اسم الطالب
-                    </div>
-
-                    <div
-                        class="value"
-                        id="studentName">
-                        -
-                    </div>
-
-                </div>
-
-                <div class="info-box">
-
-                    <div class="label">
-                        المدرسة
-                    </div>
-
-                    <div
-                        class="value"
-                        id="studentSchool">
-                        -
-                    </div>
-
-                </div>
-
-                <div class="info-box">
-
-                    <div class="label">
-                        محل الإقامة
-                    </div>
-
-                    <div
-                        class="value"
-                        id="studentLocation">
-                        -
-                    </div>
-
-                </div>
-
+            <div class="step-item">
+                <a class="option-card step-card" href="payment.html">
+                    <span class="step-number">3</span>
+                    <h2>الدفع و امضاء العقد</h2>
+                    <p>سيتم إضافة خطوات الدفع والتوقيع هنا قريبًا.</p>
+                </a>
             </div>
+        </main>
 
-            <hr>
-
-            <h2>خطط السداد</h2>
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>الخطة</th>
-                            <th>التفاصيل</th>
-                            <th>ملاحظات</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="plansTable">
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div class="bottom">
-
-                <label>
-
-                    اختر خطة السداد
-
-                </label>
-
-                <select id="planSelect">
-
-                </select>
-
-                <button id="btnDownload">
-
-                    تحميل العقد
-
-                </button>
-            </div>
-
-            <div id="downloadLoading" class="loading" style="display:none; margin-top:15px;">
-
-                <div class="spinner"></div>
-
-                <span>جارٍ تجهيز العقد... قد يستغرق ذلك بضع ثوانٍ.</span>
-
-            </div>
-
-        </div>
-
-        <!-- Footer -->
-
-        <footer>
-
-            <p>
-                في حالة وجود أي مشكلة يرجى التواصل معنا
-            </p>
-
+        <footer class="page-footer" id="support">
+            <p>نحن هنا لمساعدتك في إدارة خدماتك بسهولة وسرعة.</p>
             <div class="contact-buttons">
-
-                <button
-                    id="btnWhatsapp"
-                    class="contact-btn whatsapp">
-
-                    <img
-                        src="images/whatsapp.png"
-                        alt="WhatsApp">
-
-                    واتساب
-
-                </button>
-
-                <button
-                    id="btnFacebook"
-                    class="contact-btn facebook">
-
-                    <img
-                        src="images/facebook.png"
-                        alt="Facebook">
-
-                    فيسبوك
-
-                </button>
-
+                <a class="contact-btn whatsapp" href="https://wa.me/201157722335" target="_blank" rel="noopener noreferrer">واتساب</a>
+                <a class="contact-btn facebook" href="https://www.facebook.com/profile.php?id=61590549099190" target="_blank" rel="noopener noreferrer">فيسبوك</a>
             </div>
-
         </footer>
-
     </div>
-
-    <div id="customAlert" class="custom-alert-overlay">
-        <div class="custom-alert">
-
-            <div id="customAlertIcon" class="custom-alert-icon"></div>
-
-            <h3 id="customAlertTitle"></h3>
-
-            <p id="customAlertMessage"></p>
-
-            <button id="customAlertButton" onclick="closeAlert()">
-                OK
-            </button>
-
-        </div>
-    </div>
-
-       
-    <script src="script.js"></script>
-
-
 </body>
-
 </html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاستعلام عن خطط الاسعار و العقود - ReliaWay</title>
+    <link rel="icon" href="images/icon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="page-header">
+            <div class="header-bar">
+                <img src="images/logo.png" alt="ReliaWay Logo" class="logo">
+                <a class="back-btn" href="index.html" aria-label="العودة">→</a>
+            </div>
+            <h1>الاستعلام عن خطط الاسعار و العقود</h1>
+            <div class="gold-line"></div>
+        </header>
+
+        <main>
+            <section class="page-card">
+                <h2>البحث عن خطة السداد</h2>
+                <div class="search-row">
+                    <input id="studentId" type="text" placeholder="أدخل كود الطالب المكون من 6 أو 7 أرقام ويبدأ بـ 2627">
+                    <button id="btnList">عرض خطط السداد</button>
+                </div>
+                <div id="loading" class="loading" style="display:none;">
+                    <div class="spinner"></div>
+                    <span>جارٍ تحميل البيانات... قد يستغرق ذلك بضع ثوانٍ.</span>
+                </div>
+            </section>
+
+            <section id="result" class="page-card" style="display:none;">
+                <h2>بيانات الطالب</h2>
+                <div class="student-grid">
+                    <div class="info-box">
+                        <div class="label">اسم الطالب</div>
+                        <div class="value" id="studentName">-</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="label">المدرسة</div>
+                        <div class="value" id="studentSchool">-</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="label">محل الإقامة</div>
+                        <div class="value" id="studentLocation">-</div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 24px;">خطط السداد</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الخطة</th>
+                                <th>التفاصيل</th>
+                                <th>ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plansTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="bottom">
+                    <label>اختر خطة السداد</label>
+                    <select id="planSelect"></select>
+                    <button id="btnDownload">تحميل العقد</button>
+                </div>
+
+                <div id="downloadLoading" class="loading" style="display:none; margin-top:15px;">
+                    <div class="spinner"></div>
+                    <span>جارٍ تجهيز العقد... قد يستغرق ذلك بضع ثوانٍ.</span>
+                </div>
+            </section>
+        </main>
+
+        <footer class="page-footer" id="support">
+            <p>في حالة وجود أي مشكلة يرجى التواصل معنا.</p>
+            <div class="contact-buttons">
+                <a class="contact-btn whatsapp" href="https://wa.me/201157722335" target="_blank" rel="noopener noreferrer">واتساب</a>
+                <a class="contact-btn facebook" href="https://www.facebook.com/profile.php?id=61590549099190" target="_blank" rel="noopener noreferrer">فيسبوك</a>
+            </div>
+        </footer>
+    </div>
+
+    <div id="customAlert" class="custom-alert-overlay">
+        <div class="custom-alert">
+            <div id="customAlertIcon" class="custom-alert-icon"></div>
+            <h3 id="customAlertTitle"></h3>
+            <p id="customAlertMessage"></p>
+            <button id="customAlertButton" type="button">موافق</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

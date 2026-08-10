@@ -1,303 +1,190 @@
 
-
 const API = "https://script.google.com/macros/s/AKfycbxjs-LGDfjJoIYos1XxfrsWUcNlNr7Qf4oapCDyCw_EQm11FVn6bTfdCZDEXhMsALf4cA/exec";
-
-const whatsappNumbers = [
-    "201157722335",
-    "201206609790"
-];
-
-const FACEBOOK_LINK = "https://www.facebook.com/profile.php?id=61590549099190";
-const CONTRACT_API =
-    "https://script.google.com/macros/s/AKfycbziYvuDg0NE2Z8ttQY2GsO1YvDxE9gMB4AqlR9BEF-WGi1LaRaS-77I-RqUYc0gHncutQ/exec";
-
+const CONTRACT_API = "https://script.google.com/macros/s/AKfycbziYvuDg0NE2Z8ttQY2GsO1YvDxE9gMB4AqlR9BEF-WGi1LaRaS-77I-RqUYc0gHncutQ/exec";
 const idPattern = /^2627\d{2,3}$/;
 
-/* ===========================
-        Globals & Init
-=========================== */
-
 let currentStudent = null;
-document
-    .getElementById("btnList")
-    .addEventListener("click", loadPlans);
-
-/* ===========================
-        Payment Plans
-=========================== */
 
 function generatePricePlans(price) {
-
     price = Number(price);
 
     return {
-
         plans: [
-
-            [
-                "سنوي",
-                `${price} جنيه`,
-                "دفعة واحدة"
-            ],
-
-            [
-                "نصف سنوي",
-                `${Math.round(price / 2)} جنيه`,
-                "دفعتان متساويتان"
-            ],
-
-            [
-                "6 أشهر",
-                `${Math.round(price / 6)} جنيه شهريًا`,
-                "بدون مقدم"
-            ],
-
-            [
-                "7 أشهر (20٪ مقدم)",
-                `${Math.round(price * 0.20)} جنيه مقدم <br> ${Math.round(price * 0.80 / 7)} جنيه شهريًا`,
-                "7 أقساط شهرية"
-            ],
-
-            [
-                "7 أشهر (30٪ مقدم)",
-                `${Math.round(price * 0.30)} جنيه مقدم <br> ${Math.round(price * 0.70 / 7)} جنيه شهريًا`,
-                "7 أقساط شهرية"
-            ],
-
-            [
-                "7 أشهر (40٪ مقدم)",
-                `${Math.round(price * 0.40)} جنيه مقدم <br> ${Math.round(price * 0.60 / 7)} جنيه شهريًا`,
-                "7 أقساط شهرية"
-            ]
-
+            ["سنوي", `${price} جنيه`, "دفعة واحدة"],
+            ["نصف سنوي", `${Math.round(price / 2)} جنيه`, "دفعتان متساويتان"],
+            ["6 أشهر", `${Math.round(price / 6)} جنيه شهريًا`, "بدون مقدم"],
+            ["7 أشهر (20٪ مقدم)", `${Math.round(price * 0.2)} جنيه مقدم <br> ${Math.round((price * 0.8) / 7)} جنيه شهريًا`, "7 أقساط شهرية"],
+            ["7 أشهر (30٪ مقدم)", `${Math.round(price * 0.3)} جنيه مقدم <br> ${Math.round((price * 0.7) / 7)} جنيه شهريًا`, "7 أقساط شهرية"],
+            ["7 أشهر (40٪ مقدم)", `${Math.round(price * 0.4)} جنيه مقدم <br> ${Math.round((price * 0.6) / 7)} جنيه شهريًا`, "7 أقساط شهرية"]
         ],
-
-        values: [
-            "yearly",
-            "half",
-            "6months",
-            "7months20",
-            "7months30",
-            "7months40"
-        ]
-
+        values: ["yearly", "half", "6months", "7months20", "7months30", "7months40"]
     };
-
 }
-/* ===========================
-        Load Student
-=========================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnList = document.getElementById("btnList");
+    if (btnList) {
+        btnList.addEventListener("click", loadPlans);
+    }
+
+    const btnDownload = document.getElementById("btnDownload");
+    if (btnDownload) {
+        btnDownload.addEventListener("click", downloadContract);
+    }
+
+    const closeButton = document.getElementById("customAlertButton");
+    if (closeButton) {
+        closeButton.addEventListener("click", closeAlert);
+    }
+});
 
 async function loadPlans() {
-
-    const id = document
-        .getElementById("studentId")
+    const id = document.getElementById("studentId")
         .value
         .trim()
-        .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+        .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
 
     if (id === "") {
         showWarning("يرجى إدخال كود الطالب");
         return;
-
     }
 
     if (!idPattern.test(id)) {
-        showWarning(
-            "يرجى إدخال كود طالب صحيح.\n\n" +
-            "يجب أن يبدأ بـ 2627 ويتكون من 6 أو 7 أرقام فقط.\n\n" +
-            "أمثلة:\n262708\n2627123"
-        );
+        showWarning("يرجى إدخال كود طالب صحيح.\n\nيجب أن يبدأ بـ 2627 ويتكون من 6 أو 7 أرقام فقط.\n\nأمثلة:\n262708\n2627123");
         return;
     }
-
 
     const button = document.getElementById("btnList");
     const loading = document.getElementById("loading");
 
-    button.disabled = true;
-    button.textContent = "جارٍ التحميل...";
-    loading.style.display = "flex";
+    if (button) {
+        button.disabled = true;
+        button.textContent = "جارٍ التحميل...";
+    }
+
+    if (loading) {
+        loading.style.display = "flex";
+    }
 
     try {
-
-        const response = await fetch(
-            API +
-            "?id=" +
-            encodeURIComponent(id) +
-            "&t=" +
-            Date.now(),
-            {
-                method: "GET",
-                cache: "no-store"
-            }
-        );
+        const response = await fetch(`${API}?id=${encodeURIComponent(id)}&t=${Date.now()}`, {
+            method: "GET",
+            cache: "no-store"
+        });
 
         if (!response.ok) {
-
             throw new Error("تعذر الاتصال بالخادم.");
-
         }
 
         const student = await response.json();
         student.id = id;
-        
         currentStudent = student;
 
-
-        if(student.price == -5) {
+        if (student.price === -5) {
             showWarning("لم يتم العثور على الطالب تأكد من أن الكود صحيح");
             return;
         }
 
         switch (student.price) {
-
             case -1:
-                showWarning("لم يتم تحديد رسوم لهذا الطالب, إذا كنت تعتقد ان هناك خطأ توصل مع الدعم.");
+                showWarning("لم يتم تحديد رسوم لهذا الطالب، إذا كنت تعتقد أن هناك خطأ توصل مع الدعم.");
                 return;
-
             case -2:
-                showError("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
-                return;
-
             case -3:
-                showError("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
-                return;
-
             case -4:
-                showError("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في اقرب وقت.");
+                showError("هناك مشكلة في قيمة الرسوم برجاء التواصل مع دعم خدمة العملاء في أقرب وقت.");
                 return;
-
         }
 
-        // Student Information
+        document.getElementById("studentName").textContent = student.studentName;
+        document.getElementById("studentSchool").textContent = student.school;
+        document.getElementById("studentLocation").textContent = student.location;
 
-        document.getElementById("studentName").textContent =
-            student.studentName;
-
-        document.getElementById("studentSchool").textContent =
-            student.school;
-
-        document.getElementById("studentLocation").textContent =
-            student.location;
-
-        // Plans
         const result = generatePricePlans(student.price);
-
-        const plans = result.plans;
-        const values = result.values;
-
         const tbody = document.getElementById("plansTable");
-        tbody.innerHTML = "";
-
         const select = document.getElementById("planSelect");
-        select.innerHTML = "";
+        const resultCard = document.getElementById("result");
 
-        plans.forEach((plan, i) => {
+        if (tbody) {
+            tbody.innerHTML = "";
+        }
 
-            tbody.innerHTML += `
-                <tr>
-                    <td>${plan[0]}</td>
-                    <td>${plan[1]}</td>
-                    <td>${plan[2]}</td>
-                </tr>
-            `;
+        if (select) {
+            select.innerHTML = "";
+        }
 
-            select.innerHTML += `
-                <option value="${values[i]}">
-                    ${plan[0]}
-                </option>
-            `;
+        result.plans.forEach((plan, i) => {
+            if (tbody) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${plan[0]}</td>
+                        <td>${plan[1]}</td>
+                        <td>${plan[2]}</td>
+                    </tr>`;
+            }
 
+            if (select) {
+                select.innerHTML += `<option value="${result.values[i]}">${plan[0]}</option>`;
+            }
         });
 
-        document
-            .getElementById("result")
-            .style
-            .display = "block";
-
-    }
-    catch (error) {
-
+        if (resultCard) {
+            resultCard.style.display = "block";
+        }
+    } catch (error) {
         console.error(error);
+        showError("حدث خطأ أثناء الاتصال بالخادم.");
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "عرض خطط السداد";
+        }
 
-        showError(
-            "حدث خطأ أثناء الاتصال بالخادم."
-        );
-
+        if (loading) {
+            loading.style.display = "none";
+        }
     }
-    finally {
-
-        button.disabled = false;
-        button.textContent = "عرض خطط السداد";
-        loading.style.display = "none";
-
-    }
-
 }
 
-/* ===========================
-    Download Contract
-=========================== */
-
-document
-    .getElementById("btnDownload")
-    .addEventListener("click", () => {
-
-        downloadContract();
-
-    });
-
 async function downloadContract() {
-
     if (!currentStudent) {
-
         showWarning("يرجى البحث عن الطالب أولاً.");
         return;
-
     }
 
-    console.log(currentStudent);
-
-        
     let plan = document.getElementById("planSelect").value;
-
     let percent = 0;
 
     switch (plan) {
-
         case "7months20":
             plan = "7months";
             percent = 20;
             break;
-
         case "7months30":
             plan = "7months";
             percent = 30;
             break;
-
         case "7months40":
             plan = "7months";
             percent = 40;
             break;
-
     }
 
     const button = document.getElementById("btnDownload");
 
-    button.disabled = true;
-    button.textContent = "جارٍ إنشاء العقد...";
-    document.getElementById("downloadLoading").style.display = "flex";
+    if (button) {
+        button.disabled = true;
+        button.textContent = "جارٍ إنشاء العقد...";
+    }
+
+    const loading = document.getElementById("downloadLoading");
+    if (loading) {
+        loading.style.display = "flex";
+    }
 
     try {
-
         const response = await fetch(
-            CONTRACT_API +
-            "?price=" + encodeURIComponent(currentStudent.price) +
-            "&percent=" + encodeURIComponent(percent) +
-            "&plan=" + encodeURIComponent(plan) +
-            "&studentId=" + encodeURIComponent(currentStudent.id) +
-            "&t=" + Date.now(),
+            `${CONTRACT_API}?price=${encodeURIComponent(currentStudent.price)}&percent=${encodeURIComponent(percent)}&plan=${encodeURIComponent(plan)}&studentId=${encodeURIComponent(currentStudent.id)}&t=${Date.now()}`,
             {
                 method: "GET",
                 cache: "no-store"
@@ -309,105 +196,51 @@ async function downloadContract() {
         }
 
         const data = await response.json();
-
         if (!data.success) {
-            throw new Error(data.error);
+            throw new Error(data.error || "حدث خطأ أثناء إنشاء العقد.");
         }
 
         const a = document.createElement("a");
         a.href = data.url;
         a.click();
-
-    }
-    catch (err) {
-
-        console.error(err);
+    } catch (error) {
+        console.error(error);
         showError("حدث خطأ أثناء إنشاء العقد.");
-
-    }
-    finally {
-
-        button.disabled = false;
-        button.textContent = "تحميل العقد";
-        document.getElementById("downloadLoading").style.display = "none";
-    }
-
-}
-
-    
-/* ===========================
-    Contact
-=========================== */
-
-function getRepresentativeIndex(studentId) {
-
-    let hash = 0;
-
-    for (const c of studentId) {
-        hash = (hash * 31 + c.charCodeAt(0)) >>> 0;
-    }
-
-    return hash % whatsappNumbers.length;
-
-}
-
-document
-    .getElementById("btnWhatsapp")
-    .addEventListener("click", () => {
-
-        const index = getRepresentativeIndex(currentStudent.id);
-
-        let message = "";
-
-        message += `مرحبًا، لدي استفسار بخصوص خطط السداد.`;
-
-        if (currentStudent) {
-            message += `\n\nكود الطالب: ${currentStudent.id}`;
-            message += `\nاسم الطالب: ${currentStudent.studentName}`;
-            message +=  '\n';
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "تحميل العقد";
         }
 
-        window.open(
-            `https://wa.me/${whatsappNumbers[index]}?text=${encodeURIComponent(message)}`,
-            "_blank"
-        );
-
-    });
-
-document
-    .getElementById("btnFacebook")
-    .addEventListener("click", () => {
-
-        window.open(
-            FACEBOOK_LINK,
-            "_blank"
-        );
-
-    });
-
+        if (loading) {
+            loading.style.display = "none";
+        }
+    }
+}
 
 function showAlert(type, message) {
-
     const title = document.getElementById("customAlertTitle");
     const icon = document.getElementById("customAlertIcon");
     const button = document.getElementById("customAlertButton");
+    const overlay = document.getElementById("customAlert");
+
+    if (!title || !icon || !button || !overlay) {
+        return;
+    }
 
     switch (type) {
-
         case "success":
             title.textContent = "Success";
             icon.textContent = "✅";
             icon.style.color = "#28a745";
             button.style.background = "#28a745";
             break;
-
         case "warning":
             title.textContent = "Warning";
             icon.textContent = "⚠️";
             icon.style.color = "#f0ad4e";
             button.style.background = "#f0ad4e";
             break;
-
         case "error":
             title.textContent = "Error";
             icon.textContent = "❌";
@@ -417,15 +250,14 @@ function showAlert(type, message) {
     }
 
     document.getElementById("customAlertMessage").textContent = message;
-    document.getElementById("customAlert").style.display = "flex";
+    overlay.style.display = "flex";
 }
 
 function closeAlert() {
-    document.getElementById("customAlert").style.display = "none";
-}
-
-function showConfirmation(message) {
-    showAlert("success", message);
+    const overlay = document.getElementById("customAlert");
+    if (overlay) {
+        overlay.style.display = "none";
+    }
 }
 
 function showWarning(message) {
