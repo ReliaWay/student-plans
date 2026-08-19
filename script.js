@@ -28,19 +28,56 @@ const bundleRules = [
 
 
 // ============================================================
+// ADVANCE PERCENTAGES
+// ============================================================
+
+const advancePercentages = [20, 30, 40];
+
+
+// ============================================================
 // PRICE PLAN GENERATOR
 // ============================================================
 
-function generatePricePlans(price, bundles) {
+function generatePricePlans(price, bundles, priceType) {
 
     price = Number(price);
 
     const plans = [];
     const values = [];
 
+    const isMonthly =
+        priceType === "تكلفه الشهر";
+
+
     bundleRules.forEach(rule => {
 
-        // Student is NOT allowed to use this plan
+        // ====================================================
+        // MONTHLY PRICE MODE
+        // ====================================================
+
+        if (isMonthly) {
+
+            // No yearly
+            if (rule.key === "yearly") {
+                return;
+            }
+
+            // No half yearly
+            if (rule.key === "halfYearly") {
+                return;
+            }
+
+            // No advance plans
+            if (rule.advance) {
+                return;
+            }
+        }
+
+
+        // ====================================================
+        // CHECK AVAILABILITY
+        // ====================================================
+
         if (
             !bundles ||
             !bundles[rule.key] ||
@@ -49,87 +86,122 @@ function generatePricePlans(price, bundles) {
             return;
         }
 
+
         const name =
             bundles[rule.key].name;
 
 
-        let description = "";
-        let notes = "";
+        // ====================================================
+        // ADVANCE PLANS
+        // ====================================================
+
+        if (rule.advance) {
+
+            advancePercentages.forEach(percent => {
+
+                const initial =
+                    Math.round(
+                        price * percent / 100
+                    );
+
+                const monthly =
+                    Math.round(
+                        ((price - initial) / rule.months)
+                    );
 
 
-        // -------------------------
-        // Yearly
-        // -------------------------
+                plans.push([
+                    `${name} (${percent}% مقدم)`,
+
+                    `${initial} جنيه تقريباً مقدم <br>` +
+                    `${monthly} جنيه تقريباً شهريًا`,
+
+                    `${rule.months} أقساط شهرية`
+                ]);
+
+
+                values.push(
+                    `${rule.key}_${percent}`
+                );
+
+            });
+
+            return;
+        }
+
+
+        // ====================================================
+        // YEARLY
+        // ====================================================
 
         if (rule.key === "yearly") {
 
-            description =
-                `${price} جنيه`;
+            plans.push([
+                name,
+                `${price} جنيه تقريباً`,
+                "دفعة واحدة"
+            ]);
 
-            notes =
-                "دفعة واحدة";
+            values.push(
+                rule.key
+            );
+
+            return;
         }
 
 
-        // -------------------------
-        // Half Yearly
-        // -------------------------
+        // ====================================================
+        // HALF YEARLY
+        // ====================================================
 
-        else if (rule.key === "halfYearly") {
+        if (rule.key === "halfYearly") {
 
-            description =
-                `${Math.round(price / 2)} جنيه`;
+            const installment =
+                Math.round(price / 2);
 
-            notes =
-                "دفعتان متساويتان";
+            plans.push([
+                name,
+                `${installment} جنيه تقريباً`,
+                "دفعتان متساويتان"
+            ]);
+
+            values.push(
+                rule.key
+            );
+
+            return;
         }
 
 
-        // -------------------------
-        // Normal monthly plans
-        // -------------------------
+        // ====================================================
+        // NORMAL MONTHLY PLANS
+        // ====================================================
 
-        else if (!rule.advance) {
+        let monthly;
 
-            const monthly =
-                Math.round(price / rule.months);
+        if (isMonthly) {
 
-            description =
-                `${monthly} جنيه شهريًا`;
+            // The price itself is the monthly price
+            monthly = price;
 
-            notes =
-                `${rule.months} أقساط شهرية`;
         }
-
-
-        // -------------------------
-        // Advance plans
-        // -------------------------
-
         else {
 
-            const initial20 =
-                Math.round(price * 0.20);
-
-            const monthly20 =
+            // The price is the total/yearly price
+            monthly =
                 Math.round(
-                    (price * 0.80) / rule.months
+                    price / rule.months
                 );
 
-            description =
-                `${initial20} جنيه مقدم <br>` +
-                `${monthly20} جنيه شهريًا`;
-
-            notes =
-                `${rule.months} أقساط شهرية`;
         }
 
 
         plans.push([
             name,
-            description,
-            notes
+            `${monthly} جنيه تقريباً شهريًا`,
+            `${rule.months} أقساط شهرية`
         ]);
+
 
         values.push(
             rule.key
@@ -146,7 +218,7 @@ function generatePricePlans(price, bundles) {
 
 
 // ============================================================
-// DOM
+// DOM READY
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -210,6 +282,10 @@ async function loadPlans() {
             );
 
 
+    // ========================================================
+    // EMPTY ID
+    // ========================================================
+
     if (id === "") {
 
         showWarning(
@@ -219,6 +295,10 @@ async function loadPlans() {
         return;
     }
 
+
+    // ========================================================
+    // INVALID ID
+    // ========================================================
 
     if (!idPattern.test(id)) {
 
@@ -260,6 +340,10 @@ async function loadPlans() {
 
 
     try {
+
+        // ====================================================
+        // REQUEST STUDENT
+        // ====================================================
 
         const response =
             await fetch(
@@ -332,35 +416,57 @@ async function loadPlans() {
 
 
         // ====================================================
-        // STUDENT INFO
+        // STUDENT INFORMATION
         // ====================================================
 
-        document.getElementById(
-            "studentName"
-        ).textContent =
-            student.studentName;
+        const studentName =
+            document.getElementById(
+                "studentName"
+            );
+
+        if (studentName) {
+
+            studentName.textContent =
+                student.studentName;
+
+        }
 
 
-        document.getElementById(
-            "studentSchool"
-        ).textContent =
-            student.school;
+        const studentSchool =
+            document.getElementById(
+                "studentSchool"
+            );
+
+        if (studentSchool) {
+
+            studentSchool.textContent =
+                student.school;
+
+        }
 
 
-        document.getElementById(
-            "studentLocation"
-        ).textContent =
-            student.location;
+        const studentLocation =
+            document.getElementById(
+                "studentLocation"
+            );
+
+        if (studentLocation) {
+
+            studentLocation.textContent =
+                student.location;
+
+        }
 
 
         // ====================================================
-        // GENERATE ONLY AVAILABLE PLANS
+        // GENERATE ALLOWED PLANS
         // ====================================================
 
         const result =
             generatePricePlans(
                 student.price,
-                student.bundles
+                student.bundles,
+                student.priceType
             );
 
 
@@ -407,12 +513,11 @@ async function loadPlans() {
             );
 
             return;
-
         }
 
 
         // ====================================================
-        // DISPLAY AVAILABLE PLANS
+        // DISPLAY PLANS
         // ====================================================
 
         result.plans.forEach(
@@ -444,6 +549,10 @@ async function loadPlans() {
             }
         );
 
+
+        // ====================================================
+        // SHOW RESULT
+        // ====================================================
 
         if (resultCard) {
 
@@ -499,18 +608,48 @@ async function downloadContract() {
         );
 
         return;
-
     }
 
 
-    const plan =
+    // ========================================================
+    // SELECTED VALUE
+    // ========================================================
+
+    const selectedValue =
         document.getElementById(
             "planSelect"
         ).value;
 
 
     // ========================================================
-    // CHECK AGAINST BACKEND
+    // PLAN + PERCENT
+    // ========================================================
+
+    let plan =
+        selectedValue;
+
+    let percent = 0;
+
+
+    const advanceMatch =
+        selectedValue.match(
+            /^(6monthsAdvance|7monthsAdvance|8monthsAdvance|9monthsAdvance)_(20|30|40)$/
+        );
+
+
+    if (advanceMatch) {
+
+        plan =
+            advanceMatch[1];
+
+        percent =
+            Number(advanceMatch[2]);
+
+    }
+
+
+    // ========================================================
+    // CHECK BACKEND AVAILABILITY AGAIN
     // ========================================================
 
     if (
@@ -524,28 +663,53 @@ async function downloadContract() {
         );
 
         return;
-
     }
 
 
     // ========================================================
-    // PERCENT
+    // CALCULATE CONTRACT PRICE
     // ========================================================
 
-    let percent = 0;
+    let contractPrice =
+        Number(currentStudent.price);
 
 
     if (
-        plan === "6monthsAdvance" ||
-        plan === "7monthsAdvance" ||
-        plan === "8monthsAdvance" ||
-        plan === "9monthsAdvance"
+        currentStudent.priceType === "تكلفه الشهر"
     ) {
 
-        percent = 20;
+        // Only normal monthly plans can exist
+        // in monthly price mode.
+
+        const monthsMatch =
+            plan.match(
+                /^(\d+)months$/
+            );
+
+
+        if (!monthsMatch) {
+
+            showError(
+                "خطة السداد غير صالحة."
+            );
+
+            return;
+        }
+
+
+        const months =
+            Number(monthsMatch[1]);
+
+
+        contractPrice =
+            contractPrice * months;
 
     }
 
+
+    // ========================================================
+    // DOWNLOAD BUTTON
+    // ========================================================
 
     const button =
         document.getElementById(
@@ -579,11 +743,15 @@ async function downloadContract() {
 
     try {
 
+        // ====================================================
+        // REQUEST CONTRACT
+        // ====================================================
+
         const response =
             await fetch(
 
                 `${CONTRACT_API}` +
-                `?price=${encodeURIComponent(currentStudent.price)}` +
+                `?price=${encodeURIComponent(contractPrice)}` +
                 `&percent=${encodeURIComponent(percent)}` +
                 `&plan=${encodeURIComponent(plan)}` +
                 `&studentId=${encodeURIComponent(currentStudent.id)}` +
@@ -619,6 +787,10 @@ async function downloadContract() {
 
         }
 
+
+        // ====================================================
+        // DOWNLOAD
+        // ====================================================
 
         const a =
             document.createElement("a");
@@ -756,10 +928,18 @@ function showAlert(type, message) {
     }
 
 
-    document.getElementById(
-        "customAlertMessage"
-    ).textContent =
-        message;
+    const messageElement =
+        document.getElementById(
+            "customAlertMessage"
+        );
+
+
+    if (messageElement) {
+
+        messageElement.textContent =
+            message;
+
+    }
 
 
     overlay.style.display =
@@ -767,6 +947,10 @@ function showAlert(type, message) {
 
 }
 
+
+// ============================================================
+// CLOSE ALERT
+// ============================================================
 
 function closeAlert() {
 
@@ -785,6 +969,10 @@ function closeAlert() {
 }
 
 
+// ============================================================
+// WARNING
+// ============================================================
+
 function showWarning(message) {
 
     showAlert(
@@ -794,6 +982,10 @@ function showWarning(message) {
 
 }
 
+
+// ============================================================
+// ERROR
+// ============================================================
 
 function showError(message) {
 
