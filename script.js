@@ -263,6 +263,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    document.querySelectorAll("[data-copy-value]").forEach((copyButton) => {
+        copyButton.addEventListener("click", async () => {
+            const value = copyButton.dataset.copyValue;
+
+            try {
+                await navigator.clipboard.writeText(value);
+            } catch (error) {
+                const temporaryInput = document.createElement("input");
+                temporaryInput.value = value;
+                document.body.appendChild(temporaryInput);
+                temporaryInput.select();
+                document.execCommand("copy");
+                temporaryInput.remove();
+            }
+
+            const originalText = copyButton.textContent;
+            copyButton.textContent = "تم النسخ ✓";
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+            }, 1500);
+        });
+    });
+
+    document.querySelectorAll(".details-card").forEach((details) => {
+        const summary = details.querySelector("summary");
+
+        summary.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            if (details.open) {
+                details.classList.remove("is-opening");
+                details.classList.add("is-closing");
+                setTimeout(() => {
+                    details.open = false;
+                    details.classList.remove("is-closing");
+                }, 350);
+                return;
+            }
+
+            details.open = true;
+            details.classList.add("is-opening");
+            setTimeout(() => {
+                details.classList.remove("is-opening");
+            }, 400);
+        });
+    });
+
 });
 
 

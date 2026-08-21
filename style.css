@@ -90,6 +90,24 @@ body {
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
+.copy-account-btn {
+    border: 0;
+    background: #0D3B66;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.copy-account-btn:hover {
+    background: #C9A227;
+    color: #0D3B66;
+    transform: translateY(-1px);
+}
+
 .contact-btn:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
@@ -331,8 +349,37 @@ body {
     margin-top: 14px;
     padding-top: 12px;
     border-top-color: #e8edf3;
-    max-height: 220px;
+    max-height: 1000px;
     opacity: 1;
+}
+
+.details-card.is-opening .details-content {
+    animation: details-open 0.4s ease both;
+}
+
+.details-card.is-closing .details-content {
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    border-top-color: transparent;
+    opacity: 0;
+}
+
+@keyframes details-open {
+    from {
+        max-height: 0;
+        margin-top: 0;
+        padding-top: 0;
+        border-top-color: transparent;
+        opacity: 0;
+    }
+    to {
+        max-height: 1000px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top-color: #e8edf3;
+        opacity: 1;
+    }
 }
 
 .details-content p {
@@ -433,6 +480,14 @@ button:disabled {
     color: #0D3B66;
     font-size: 20px;
     font-weight: bold;
+}
+
+.account-copy-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .table-container {
